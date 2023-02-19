@@ -30,7 +30,7 @@ class Ball(pygame.sprite.Sprite):
     def __init__(self, direction):
         super().__init__()
 
-        self.direction = direction
+        self.direction = direction  # r or l
 
         self.image = pygame.image.load("assets/graphics/ball.jpg")
         self.image = pygame.transform.scale(self.image, (BALL_WIDTH, BALL_HEIGHT))
@@ -46,7 +46,7 @@ class Ball(pygame.sprite.Sprite):
         if self.direction == "l":
             self.rect.x -= VELOCITY
 
-    def collide(self):
+    def collide(self):  # checks for collisions and increments player score for each collision
         global player1_score, player2_score
 
         if pygame.sprite.spritecollide(self, player1, False):
@@ -72,7 +72,7 @@ class Ball(pygame.sprite.Sprite):
 
 
 # Functions
-def check_user_input(user_key_input):
+def check_user_input(user_key_input):  # general function that responds to the user's keyboard inputs (except for movement)
     global game_active, player1_score, player2_score, start_time, player1, player2, ball_group, select_sound
 
     if not game_active and user_key_input == pygame.K_SPACE:
@@ -106,7 +106,7 @@ def check_user_input(user_key_input):
             ball_group.empty()
 
 
-def display_time_scores():
+def display_time_scores():  # displays time in-game and the players' scores
     current_time = (pygame.time.get_ticks() - start_time)//1000
     time_surf = text_font.render(f"Time: {current_time}/30s", False, "White")
     time_rect = time_surf.get_rect(center=(SCREEN_WIDTH//2, 50))
@@ -123,7 +123,7 @@ def display_time_scores():
     return current_time
 
 
-def display_winner():
+def display_winner():  # straight forward name
     if player1_score > player2_score:
         winner = "Player 1"
     elif player2_score > player1_score:
@@ -185,14 +185,15 @@ while True:
 
         if game_active:
             if event.type == ball_timer:
-                ball_group.add(Ball(direction=choice(["r", "l"])))
+                ball_group.add(Ball(direction=choice(["r", "l"])))  # adds a new ball every BALL_SPAWN_INTERVAL
 
     if game_active:
         first_time_on_menu = False
         time = display_time_scores()
-        if time >= 30:
+        if time >= 30:  # stop game at 30 secs
             game_active = False
 
+        # player movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_s] and player1.sprite.rect.bottom > MIN_Y_SPAWN:
             player1.sprite.rect.y -= MAX_Y_MOVEMENT
@@ -220,6 +221,7 @@ while True:
         display_time_scores()
 
     else:
+        # "<< >>" animation in menu
         menu_index += 0.04
         if menu_index >= len(menu):
             menu_index = 0
